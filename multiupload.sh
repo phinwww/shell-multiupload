@@ -5,6 +5,12 @@ do
     esac
 done
 
+kfget=$(curl https://s2.krakenfiles.com/api/server/available -H "Accept: application/json")
+kfsrv=$(echo $kfget | jq -r '.data.url')
+kftkn=$(echo $kfget | jq -r '.data.serverAccessToken')
+
+kf=$(curl -X POST $kfsrv -F "serverAccessToken=$kftkn" -F "file=@$file")
+kfurl=$(echo $kf | jq -r '.data.url')
 af=$(curl -X POST https://api.anonfiles.com/upload -F "file=@$file" &) 
 afurl=$(echo $af | jq -r '.data.file.url.short')
 bf=$(curl -X POST https://api.bayfiles.com/upload -F "file=@$file" &) 
@@ -32,9 +38,7 @@ olurl=$(echo $ol | jq -r '.data.file.url.short')
 lb=$(curl -X POST https://api.lolabits.se/upload -F "file=@$file" &) 
 lburl=$(echo $lb | jq -r '.data.file.url.short')
 
-
-
-
+echo "uploaded to krakenfiles on $kfurl" &
 echo "uploaded to anonfiles on $afurl" &
 echo "uploaded to bayfiles on $bfurl" &
 echo "uploaded to filechan on $fcurl" &
